@@ -46,7 +46,6 @@ public class TrustPreferences extends SettingsPreferenceFragment {
 
     private PreferenceCategory mWarnScreen;
     private SwitchPreference mWarnSELinuxPref;
-    private SwitchPreference mWarnKeysPref;
 
     private TrustInterface mInterface;
 
@@ -69,7 +68,6 @@ public class TrustPreferences extends SettingsPreferenceFragment {
 
         mWarnScreen = findPreference("trust_category_warnings");
         mWarnSELinuxPref = mWarnScreen.findPreference("trust_warning_selinux");
-        mWarnKeysPref = mWarnScreen.findPreference("trust_warning_keys");
 
         mSELinuxPref.setOnPreferenceClickListener(p ->
                 showInfo(R.string.trust_feature_selinux_explain));
@@ -82,8 +80,6 @@ public class TrustPreferences extends SettingsPreferenceFragment {
 
         mWarnSELinuxPref.setOnPreferenceChangeListener((p, v) ->
                 onWarningChanged((Boolean) v, TrustInterface.TRUST_WARN_SELINUX));
-        mWarnKeysPref.setOnPreferenceChangeListener((p, v) ->
-                onWarningChanged((Boolean) v, TrustInterface.TRUST_WARN_PUBLIC_KEY));
         setup();
     }
 
@@ -100,9 +96,8 @@ public class TrustPreferences extends SettingsPreferenceFragment {
         setupEncryption(encryptLevel);
 
         int currentFeatures = LineageSettings.Secure.getInt(getContext().getContentResolver(),
-                LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_MAX_VALUE);
+                LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_DEF_VALUE);
         mWarnSELinuxPref.setChecked((currentFeatures & TrustInterface.TRUST_WARN_SELINUX) != 0);
-        mWarnKeysPref.setChecked((currentFeatures & TrustInterface.TRUST_WARN_PUBLIC_KEY) != 0);
 
         if (!isTelephony()) {
             mToolsCategory.removePreference(mSmsLimitPref);
@@ -227,7 +222,7 @@ public class TrustPreferences extends SettingsPreferenceFragment {
 
     private boolean onWarningChanged(Boolean value, int feature) {
         int original = LineageSettings.Secure.getInt(getContext().getContentResolver(),
-                LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_MAX_VALUE);
+                LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_DEF_VALUE);
         int newValue = value ? (original | feature) : (original & ~feature);
         boolean success = LineageSettings.Secure.putInt(getContext().getContentResolver(),
                 LineageSettings.Secure.TRUST_WARNINGS, newValue);

@@ -69,10 +69,5 @@
             android:key="trust_warning_selinux"
             android:summary="@string/trust_warnings_selinux"
             android:defaultValue="true" />
-
-        <SwitchPreference
-            android:key="trust_warning_keys"
-            android:summary="@string/trust_warnings_keys"
-            android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>
