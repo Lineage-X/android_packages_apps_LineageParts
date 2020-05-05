@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 The LineageOS Project
+ * Copyright (C) 2018-2020 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,14 +63,13 @@ public class TrustPreferences extends SettingsPreferenceFragment {
         mSELinuxPref = findPreference("trust_selinux");
         mSecurityPatchesPref = findPreference("trust_security_patch");
         mEncryptionPref = findPreference("trust_encryption");
-        mToolsCategory = (PreferenceCategory) findPreference("trust_category_tools");
-        mUsbRestrictorPref = (LineageSecureSettingSwitchPreference)
-                mToolsCategory.findPreference("trust_restrict_usb");
-        mSmsLimitPref = (ListPreference) mToolsCategory.findPreference("sms_security_check_limit");
+        mToolsCategory = findPreference("trust_category_tools");
+        mUsbRestrictorPref = mToolsCategory.findPreference("trust_restrict_usb");
+        mSmsLimitPref = mToolsCategory.findPreference("sms_security_check_limit");
 
-        mWarnScreen = (PreferenceCategory) findPreference("trust_category_warnings");
-        mWarnSELinuxPref = (SwitchPreference) mWarnScreen.findPreference("trust_warning_selinux");
-        mWarnKeysPref = (SwitchPreference) mWarnScreen.findPreference("trust_warning_keys");
+        mWarnScreen = findPreference("trust_category_warnings");
+        mWarnSELinuxPref = mWarnScreen.findPreference("trust_warning_selinux");
+        mWarnKeysPref = mWarnScreen.findPreference("trust_warning_keys");
 
         mSELinuxPref.setOnPreferenceClickListener(p ->
                 showInfo(R.string.trust_feature_selinux_explain));
@@ -230,8 +229,12 @@ public class TrustPreferences extends SettingsPreferenceFragment {
         int original = LineageSettings.Secure.getInt(getContext().getContentResolver(),
                 LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_MAX_VALUE);
         int newValue = value ? (original | feature) : (original & ~feature);
-        return LineageSettings.Secure.putInt(getContext().getContentResolver(),
+        boolean success = LineageSettings.Secure.putInt(getContext().getContentResolver(),
                 LineageSettings.Secure.TRUST_WARNINGS, newValue);
+        if (success && !value) {
+            mInterface.removeNotificationForFeature(feature);
+        }
+        return success;
     }
 
 
