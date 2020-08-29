@@ -225,7 +225,8 @@ public class TrustPreferences extends SettingsPreferenceFragment {
                 LineageSettings.Secure.TRUST_WARNINGS, TrustInterface.TRUST_WARN_DEF_VALUE);
         int newValue = value ? (original | feature) : (original & ~feature);
         boolean success = LineageSettings.Secure.putInt(getContext().getContentResolver(),
-                LineageSettings.Secure.TRUST_WARNINGS, newValue);
+                LineageSettings.Secure.TRUST_WARNINGS,
+                newValue & TrustInterface.TRUST_WARN_MAX_VALUE);
         if (success && !value) {
             mInterface.removeNotificationForFeature(feature);
         }
